@@ -1,0 +1,88 @@
+{
+  "Metadata": {
+    "title": "LOULA VIA — Sacs & accessoires",
+    "description": "Élégance & Style au quotidien. Sacs et accessoires pour femmes, livrés dans toutes les wilayas d'Algérie."
+  },
+  "Nav": {
+    "home": "Accueil",
+    "cart": "Panier",
+    "instagram": "Instagram",
+    "language": "Langue",
+    "switchTo": "العربية"
+  },
+  "Hero": {
+    "eyebrow": "Sacs & accessoires",
+    "title": "Élégance & Style au quotidien",
+    "subtitle": "Des pièces choisies pour accompagner chaque journée, livrées partout en Algérie.",
+    "cta": "Découvrir la collection"
+  },
+  "Banner": {
+    "delivery": "Livraison disponible dans toutes les wilayas"
+  },
+  "Products": {
+    "title": "La collection",
+    "empty": "Les pièces arrivent très bientôt.",
+    "addToCart": "Ajouter au panier"
+  },
+  "Product": {
+    "back": "Retour à la collection",
+    "whatsapp": "Commander sur WhatsApp"
+  },
+  "Footer": {
+    "tagline": "Élégance & Style au quotidien",
+    "whatsapp": "WhatsApp",
+    "rights": "Tous droits réservés."
+  },
+  "Cart": {
+    "title": "Votre panier",
+    "empty": "Votre panier est vide.",
+    "close": "Fermer",
+    "decrease": "Diminuer la quantité",
+    "increase": "Augmenter la quantité",
+    "remove": "Supprimer",
+    "wilaya": "Wilaya",
+    "chooseWilaya": "Choisir une wilaya",
+    "subtotal": "Sous-total",
+    "delivery": "Livraison",
+    "total": "Total",
+    "checkout": "Commander"
+  },
+  "Checkout": {
+    "title": "Commande",
+    "name": "Nom complet",
+    "phone": "Téléphone",
+    "wilaya": "Wilaya",
+    "chooseWilaya": "Choisir une wilaya",
+    "address": "Adresse",
+    "payment": "Paiement à la livraison",
+    "submit": "Confirmer la commande",
+    "pending": "Enregistrement…",
+    "summary": "Récapitulatif",
+    "delivery": "Livraison",
+    "total": "Total",
+    "empty": "Votre panier est vide.",
+    "loading": "Chargement du panier…"
+  },
+  "Thanks": {
+    "title": "Merci pour votre commande",
+    "number": "Numéro de commande",
+    "body": "Votre commande est enregistrée. WhatsApp va s'ouvrir avec le message prêt à envoyer.",
+    "whatsapp": "Envoyer sur WhatsApp",
+    "home": "Retour à la boutique",
+    "missing": "Aucune commande à afficher."
+  },
+  "Errors": {
+    "generic": "Une erreur est survenue. Veuillez réessayer.",
+    "notFound": "Cette page est introuvable.",
+    "retry": "Réessayer",
+    "invalid": "Vérifiez les informations saisies.",
+    "phone": "Le téléphone doit commencer par 05, 06 ou 07, suivi de 8 chiffres.",
+    "name": "Indiquez votre nom complet.",
+    "address": "Indiquez une adresse plus précise.",
+    "wilaya": "Choisissez une wilaya.",
+    "empty": "Votre panier est vide.",
+    "product": "Un article n'est plus disponible.",
+    "save": "La commande n'a pas pu être enregistrée. Réessayez.",
+    "whatsapp": "La commande est enregistrée, mais WhatsApp n'est pas configuré."
+  }
+}

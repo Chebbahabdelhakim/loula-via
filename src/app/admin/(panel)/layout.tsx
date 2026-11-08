@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { signOut } from "@/app/admin/actions";
 import { getSupabasePublicEnv } from "@/lib/supabase/env";
 import { createSupabaseServer } from "@/lib/supabase/server";
@@ -12,6 +13,8 @@ const links = [
 ];
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
+  await connection();
+
   const { url, key } = getSupabasePublicEnv();
   if (!url || !key) redirect("/admin/login?erreur=config");
 

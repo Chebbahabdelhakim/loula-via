@@ -1,10 +1,15 @@
+import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { SettingsForm } from "./settings-form";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getSupabasePublicEnv } from "@/lib/supabase/env";
 import type { DeliveryFee } from "@/lib/types";
 
+export const instant = false;
+
 export default async function SettingsPage() {
+  await connection();
+
   const { url, key } = getSupabasePublicEnv();
   if (!url || !key) redirect("/admin/login?erreur=config");
 

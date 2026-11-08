@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { updateOrderStatus } from "@/app/admin/actions";
 import { formatDa } from "@/lib/money";
 import { toInternationalDz } from "@/lib/phone";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getSupabasePublicEnv } from "@/lib/supabase/env";
 import { ORDER_STATUSES, type Order, type OrderStatus } from "@/lib/types";
+
+export const instant = false;
 
 function formatWhen(value: string) {
   return new Intl.DateTimeFormat("fr-DZ", {
@@ -21,6 +24,8 @@ export default async function OrdersPage({
 }: {
   searchParams: Promise<{ statut?: string }>;
 }) {
+  await connection();
+
   const { url, key } = getSupabasePublicEnv();
   if (!url || !key) redirect("/admin/login?erreur=config");
 

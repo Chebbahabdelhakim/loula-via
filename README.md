@@ -4,7 +4,7 @@ Boutique en ligne de sacs et accessoires pour femmes (Algérie). Le site est en 
 
 ## Notes de maintenance
 
-- Le projet accepte désormais les deux conventions de variables Supabase : `NEXT_PUBLIC_SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` et `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` / `SUPABASE_SECRET_KEY`.
+- Le projet accepte les noms Supabase actuels `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` / `SUPABASE_SECRET_KEY`, ainsi que les anciens noms `NEXT_PUBLIC_SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` en secours.
 - L’accès `/admin` est vérifié côté serveur à partir de la table `admins`, pas seulement par le middleware.
 - Les composants du panier lisent depuis `localStorage` dans leur état initial pour éviter le flash visuel et les états incohérents à l’hydratation.
 
@@ -29,9 +29,8 @@ Boutique en ligne de sacs et accessoires pour femmes (Algérie). Le site est en 
 1. Dans Supabase, ouvrez **SQL Editor** → **New query**.
 2. Ouvrez le fichier `supabase/schema.sql` de ce dossier, copiez tout son contenu, collez-le dans l’éditeur, puis cliquez sur **Run**.
 3. Ouvrez une nouvelle requête, copiez `supabase/seed.sql`, collez-le, puis **Run**.
-4. Vérifiez **Table Editor** : vous devez voir `products` (4 lignes), `delivery_fees` (58 lignes), `orders`, `order_items`, `site_settings`, `admins`.
-
-Le script crée aussi le dossier de photos **products** (Storage), public en lecture. S’il affiche une erreur uniquement sur le bucket, allez dans **Storage** → **New bucket**, nommez-le exactement `products`, cochez **Public**, puis relancez seulement la fin de `schema.sql` (les policies Storage).
+4. Vérifiez **Table Editor** : vous devez voir `products`, `delivery_fees` (58 lignes), `orders`, `order_items`, `site_settings` et `admins`.
+5. Vérifiez **Storage** : le bucket public `products` est créé par le schéma; les règles autorisent la lecture publique des photos et leur gestion par les comptes administrateurs.
 
 ## 3. Créer les deux administrateurs
 
@@ -57,8 +56,8 @@ select id, 'Wail' from auth.users where email = 'EMAIL_DE_WAIL';
 Dans Supabase : **Project Settings** → **API Keys**.
 
 - L’URL du projet (`https://xxxx.supabase.co`) va dans `NEXT_PUBLIC_SUPABASE_URL`.
-- La clé **publishable** (`sb_publishable_...`) va dans `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Elle peut être visible dans le navigateur.
-- La clé **secret** (`sb_secret_...`) va dans `SUPABASE_SERVICE_ROLE_KEY`. Elle ne doit jamais être collée dans le code, dans GitHub, ni dans un message public. Elle sert uniquement au serveur pour enregistrer les commandes et vérifier les admins.
+- La clé **publishable** (`sb_publishable_...`) va dans `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Elle peut être visible dans le navigateur.
+- La clé **secret** (`sb_secret_...`) va dans `SUPABASE_SECRET_KEY`. Elle ne doit jamais être collée dans le code, dans GitHub, ni dans un message public. Elle sert uniquement au serveur pour enregistrer les commandes et vérifier les admins.
 
 ## 5. Remplir `.env.local`
 
@@ -70,15 +69,15 @@ Il est masqué par Git (le point au début du nom). Dans Cursor : Ctrl+P, puis t
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
-SUPABASE_SERVICE_ROLE_KEY=sb_secret_...
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+SUPABASE_SECRET_KEY=sb_secret_...
 NEXT_PUBLIC_WHATSAPP_NUMBER=213779293290
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
 `NEXT_PUBLIC_WHATSAPP_NUMBER` est le numéro de la boutique, au format international, **sans** le signe `+`.
 
-Tant que `SUPABASE_SERVICE_ROLE_KEY` contient le texte `COLLE_ICI_TA_CLE_SECRETE`, les commandes ne s’enregistrent pas et l’admin refuse l’accès même avec le bon mot de passe. Remplacez-le par la vraie clé `sb_secret_`, puis relancez `npm run dev`.
+Tant que `SUPABASE_SECRET_KEY` contient un texte d’exemple, les commandes ne s’enregistrent pas et l’admin refuse l’accès même avec le bon mot de passe. Remplacez-le par la vraie clé `sb_secret_`, puis relancez `npm run dev`.
 
 Le modèle sans secrets est `.env.example`. Ne le remplissez pas avec les vraies clés.
 

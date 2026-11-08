@@ -15,18 +15,24 @@ export function LoginForm({ notice }: { notice: string }) {
     event.preventDefault();
     setPending(true);
     setError("");
-    const supabase = createSupabaseBrowser();
-    const { error: signError } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    });
-    setPending(false);
-    if (signError) {
-      setError("E-mail ou mot de passe incorrect. Si le compte vient d'être créé, désactivez la confirmation d'e-mail dans Supabase ou confirmez l'adresse.");
-      return;
+    try {
+      const supabase = createSupabaseBrowser();
+      const { error: signError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (signError) {
+        setError("E-mail ou mot de passe incorrect. Si le compte vient d'être créé, désactivez la confirmation d'e-mail dans Supabase ou confirmez l'adresse.");
+        return;
+      }
+
+      router.replace("/admin");
+      router.refresh();
+    } catch {
+      setError("Configuration Supabase incomplète. Vérifiez NEXT_PUBLIC_SUPABASE_URL et la clé publique dans .env.local.");
+    } finally {
+      setPending(false);
     }
-    router.replace("/admin");
-    router.refresh();
   }
 
   return (

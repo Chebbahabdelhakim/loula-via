@@ -9,6 +9,7 @@ const config: Config = {
         gold: {
           DEFAULT: "#B8975A",
           dark: "#8C7344",
+          ink: "#5A431C",
         },
         ivory: "#FBF7F2",
       },

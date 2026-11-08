@@ -6,17 +6,18 @@ import { Link } from "@/i18n/navigation";
 
 export function Thanks({ orderNumber }: { orderNumber: string }) {
   const t = useTranslations("Thanks");
-  const [whatsappUrl, setWhatsappUrl] = useState("");
+  const [whatsappUrl] = useState(() => {
+    if (typeof window === "undefined") return "";
+    return window.sessionStorage.getItem("loula-wa") ?? "";
+  });
 
   useEffect(() => {
-    const url = sessionStorage.getItem("loula-wa") ?? "";
-    setWhatsappUrl(url);
-    if (!url) return;
+    if (!whatsappUrl) return;
     const timer = window.setTimeout(() => {
-      window.location.href = url;
+      window.location.href = whatsappUrl;
     }, 900);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [whatsappUrl]);
 
   return (
     <div className="mx-auto flex max-w-lg flex-col items-center px-4 py-20 text-center">
@@ -26,6 +27,7 @@ export function Thanks({ orderNumber }: { orderNumber: string }) {
         {t("number")} <span className="font-medium">#{orderNumber}</span>
       </p>
       <p className="mt-3 text-ink/70">{t("body")}</p>
+      <p className="mt-3 text-sm text-ink/70">{t("deliveryFeeConfirmed")}</p>
       {whatsappUrl ? (
         <a
           href={whatsappUrl}

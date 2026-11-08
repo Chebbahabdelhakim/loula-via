@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { signOut } from "@/app/admin/actions";
+import { getSupabasePublicEnv } from "@/lib/supabase/env";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
 const links = [
@@ -11,11 +12,22 @@ const links = [
 ];
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
+  const { url, key } = getSupabasePublicEnv();
+  if (!url || !key) redirect("/admin/login?erreur=config");
+
   const supabase = await createSupabaseServer();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/admin/login");
+
+  const { data: adminAccess, error } = await supabase
+    .from("admins")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error || !adminAccess) redirect("/admin/login?erreur=acces");
 
   return (
     <div className="min-h-full">

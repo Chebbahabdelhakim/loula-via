@@ -26,7 +26,9 @@
   },
   "Product": {
     "back": "Retour à la collection",
-    "whatsapp": "Commander sur WhatsApp"
+    "buyNow": "Commander maintenant",
+    "payOnDelivery": "Paiement à la livraison",
+    "deliveryAlgeria": "Livraison dans toute l'Algérie"
   },
   "Footer": {
     "tagline": "Élégance & Style au quotidien",
@@ -41,10 +43,10 @@
     "increase": "Augmenter la quantité",
     "remove": "Supprimer",
     "wilaya": "Wilaya",
-    "chooseWilaya": "Choisir une wilaya",
+    "chooseWilaya": "Choisir votre wilaya",
     "subtotal": "Sous-total",
-    "delivery": "Livraison",
     "total": "Total",
+    "deliveryFeeConfirmed": "Frais de livraison confirmés par téléphone",
     "checkout": "Commander"
   },
   "Checkout": {
@@ -52,14 +54,15 @@
     "name": "Nom complet",
     "phone": "Téléphone",
     "wilaya": "Wilaya",
-    "chooseWilaya": "Choisir une wilaya",
+    "chooseWilaya": "Choisir votre wilaya",
     "address": "Adresse",
     "payment": "Paiement à la livraison",
     "submit": "Confirmer la commande",
     "pending": "Enregistrement…",
     "summary": "Récapitulatif",
-    "delivery": "Livraison",
+    "subtotal": "Sous-total",
     "total": "Total",
+    "deliveryFeeConfirmed": "Frais de livraison confirmés par téléphone",
     "empty": "Votre panier est vide.",
     "loading": "Chargement du panier…"
   },
@@ -67,6 +70,7 @@
     "title": "Merci pour votre commande",
     "number": "Numéro de commande",
     "body": "Votre commande est enregistrée. WhatsApp va s'ouvrir avec le message prêt à envoyer.",
+    "deliveryFeeConfirmed": "Frais de livraison confirmés par téléphone",
     "whatsapp": "Envoyer sur WhatsApp",
     "home": "Retour à la boutique",
     "missing": "Aucune commande à afficher."

@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatDa } from "@/lib/money";
 import { useCart } from "@/components/cart-provider";
+import { getWilayaName, WILAYAS } from "@/lib/wilayas";
 
 export function CartButton() {
   const t = useTranslations("Cart");
@@ -38,7 +39,7 @@ export function CartButton() {
           <button
             type="button"
             onClick={() => cart.setOpen(false)}
-            className="rounded-full px-3 py-2 text-sm text-ink/70 transition hover:bg-cream"
+            className="min-h-11 min-w-11 rounded-full px-3 py-2 text-sm text-ink/70 transition hover:bg-cream"
           >
             {t("close")}
           </button>
@@ -61,7 +62,7 @@ export function CartButton() {
                           type="button"
                           aria-label={t("decrease")}
                           onClick={() => cart.setQuantity(item.productId, item.quantity - 1)}
-                          className="h-10 w-10 rounded-full border border-gold/40"
+                              className="h-11 w-11 rounded-full border border-gold/40"
                         >
                           −
                         </button>
@@ -70,7 +71,7 @@ export function CartButton() {
                           type="button"
                           aria-label={t("increase")}
                           onClick={() => cart.setQuantity(item.productId, item.quantity + 1)}
-                          className="h-10 w-10 rounded-full border border-gold/40"
+                              className="h-11 w-11 rounded-full border border-gold/40"
                         >
                           +
                         </button>
@@ -93,31 +94,26 @@ export function CartButton() {
               </label>
               <select
                 id="cart-wilaya"
+                dir={locale === "ar" ? "rtl" : "ltr"}
+                required
                 value={cart.wilayaCode ?? ""}
                 onChange={(event) =>
                   cart.setWilayaCode(event.target.value ? Number(event.target.value) : null)
                 }
-                className="w-full max-w-full rounded-card border border-gold/30 bg-cream px-3 py-3"
+                className="min-h-11 w-full max-w-full rounded-card border border-gold/30 bg-cream px-3 py-3"
               >
-                <option value="">{t("chooseWilaya")}</option>
-                {cart.fees.map((fee) => (
-                  <option key={fee.code} value={fee.code}>
-                    {fee.code.toString().padStart(2, "0")} — {fee.name}
+                <option value="" disabled>{t("chooseWilaya")}</option>
+                {WILAYAS.map((wilaya) => (
+                  <option key={wilaya.code} value={wilaya.code}>
+                    {getWilayaName(wilaya, locale)}
                   </option>
                 ))}
               </select>
-              <div className="flex justify-between text-sm">
-                <span>{t("subtotal")}</span>
-                <span>{formatDa(cart.subtotal)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>{t("delivery")}</span>
-                <span>{cart.deliveryFee === null ? "—" : formatDa(cart.deliveryFee)}</span>
-              </div>
               <div className="flex justify-between text-base font-medium">
                 <span>{t("total")}</span>
                 <span>{formatDa(cart.total)}</span>
               </div>
+              <p className="text-sm text-ink/70">{t("deliveryFeeConfirmed")}</p>
               <Link
                 href="/commande"
                 onClick={() => cart.setOpen(false)}
@@ -138,13 +134,13 @@ export function CartButton() {
         type="button"
         onClick={() => cart.setOpen(true)}
         aria-label={t("title")}
-        className="relative rounded-full border border-gold/40 p-2 text-ink transition hover:border-gold hover:bg-ivory"
+        className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-gold/40 p-2 text-ink transition hover:border-gold hover:bg-ivory"
       >
         <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-none stroke-current">
           <path d="M6 7h12l-1 12H7L6 7z" strokeWidth="1.6" strokeLinejoin="round" />
           <path d="M9 7a3 3 0 0 1 6 0" strokeWidth="1.6" strokeLinecap="round" />
         </svg>
-        {count > 0 ? (
+        {cart.ready && count > 0 ? (
           <span className="absolute -top-1 -end-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 text-[11px] text-ink">
             {count}
           </span>

@@ -1,4 +1,6 @@
+import { redirect } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabase/server";
+import { getSupabasePublicEnv } from "@/lib/supabase/env";
 import { formatDa } from "@/lib/money";
 
 function algiersStamp(date: Date, monthOnly = false) {
@@ -12,6 +14,9 @@ function algiersStamp(date: Date, monthOnly = false) {
 }
 
 export default async function DashboardPage() {
+  const { url, key } = getSupabasePublicEnv();
+  if (!url || !key) redirect("/admin/login?erreur=config");
+
   const supabase = await createSupabaseServer();
   const now = new Date();
   const dayStart = new Date(algiersStamp(now)).toISOString();

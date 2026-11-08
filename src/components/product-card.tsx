@@ -43,10 +43,10 @@ export function ProductCard({
       </Link>
       <div className="flex flex-1 flex-col gap-3 p-3 sm:p-4">
         <div>
-          <h3 className="font-display text-lg leading-snug sm:text-xl">
+          <h3 className="line-clamp-2 min-h-14 break-words font-display text-lg leading-snug sm:text-xl">
             <Link href={`/produit/${product.id}`}>{name}</Link>
           </h3>
-          <p className="mt-1 text-sm text-gold-dark">{formatDa(product.price)}</p>
+          <p className="mt-1 text-sm text-gold-ink">{formatDa(product.price)}</p>
         </div>
         <div className="mt-auto">
           <AddToCartButton

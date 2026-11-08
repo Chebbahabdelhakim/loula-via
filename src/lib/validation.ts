@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { WILAYAS } from "@/lib/wilayas";
 
 export const cartItemSchema = z.object({
   productId: z.uuid(),
@@ -8,7 +9,10 @@ export const cartItemSchema = z.object({
 export const checkoutSchema = z.object({
   customerName: z.string().trim().min(2).max(120),
   phone: z.string().trim().regex(/^0[567]\d{8}$/),
-  wilayaCode: z.number().int().min(1).max(58),
+  wilayaCode: z.number().int().refine(
+    (code) => WILAYAS.some((wilaya) => wilaya.code === code),
+    "Choisissez une wilaya valide.",
+  ),
   address: z.string().trim().min(5).max(300),
   locale: z.enum(["fr", "ar"]),
   items: z.array(cartItemSchema).min(1).max(30),

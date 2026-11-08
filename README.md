@@ -2,6 +2,12 @@
 
 Boutique en ligne de sacs et accessoires pour femmes (Algérie). Le site est en français et en arabe. Le paiement se fait uniquement à la livraison. Une commande est d’abord enregistrée, puis un message WhatsApp s’ouvre, déjà rédigé.
 
+## Notes de maintenance
+
+- Le projet accepte désormais les deux conventions de variables Supabase : `NEXT_PUBLIC_SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` et `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` / `SUPABASE_SECRET_KEY`.
+- L’accès `/admin` est vérifié côté serveur à partir de la table `admins`, pas seulement par le middleware.
+- Les composants du panier lisent depuis `localStorage` dans leur état initial pour éviter le flash visuel et les états incohérents à l’hydratation.
+
 ## Ce qui a été choisi pour vous
 
 - Frais de livraison de départ : Alger 400 DA, Blida, Boumerdès et Tipaza 600 DA, les autres wilayas 800 DA. Vous les changez dans l’admin, page Réglages.

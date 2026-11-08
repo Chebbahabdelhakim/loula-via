@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { placeOrder, type OrderErrorCode } from "@/app/actions/place-order";
@@ -19,9 +19,10 @@ export function CheckoutForm() {
   const [address, setAddress] = useState("");
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState("");
+  const lock = useRef(false);
 
   if (!cart.ready) {
-    return <p className="text-ink/60">{t("loading")}</p>;
+    return <div className="min-h-[28rem] animate-pulse rounded-card bg-ivory" aria-busy="true" />;
   }
 
   if (cart.items.length === 0) {
@@ -30,6 +31,8 @@ export function CheckoutForm() {
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (lock.current) return;
+    lock.current = true;
     setMessage("");
     const payload = {
       customerName: name,
@@ -44,6 +47,7 @@ export function CheckoutForm() {
     };
     const parsed = checkoutSchema.safeParse(payload);
     if (!parsed.success) {
+      lock.current = false;
       const path = parsed.error.issues[0]?.path[0];
       const code: OrderErrorCode =
         path === "phone"
@@ -60,16 +64,22 @@ export function CheckoutForm() {
     }
 
     setPending(true);
-    const result = await placeOrder(parsed.data);
-    setPending(false);
-    if (!result.ok) {
-      setMessage(errors(result.code));
-      return;
-    }
+    try {
+      const result = await placeOrder(parsed.data);
+      if (!result.ok) {
+        setMessage(errors(result.code));
+        return;
+      }
 
-    if (result.whatsappUrl) sessionStorage.setItem("loula-wa", result.whatsappUrl);
-    cart.clear();
-    router.push(`/merci?n=${result.orderNumber}`);
+      if (result.whatsappUrl) sessionStorage.setItem("loula-wa", result.whatsappUrl);
+      cart.clear();
+      router.push(`/merci?n=${result.orderNumber}`);
+    } catch {
+      setMessage(errors("save"));
+    } finally {
+      lock.current = false;
+      setPending(false);
+    }
   }
 
   return (
@@ -84,7 +94,7 @@ export function CheckoutForm() {
             required
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="mt-1 w-full rounded-card border border-gold/30 bg-cream px-3 py-3"
+            className="mt-1 min-h-11 w-full rounded-card border border-gold/30 bg-cream px-3 py-3"
           />
         </label>
         <label className="block text-sm" htmlFor="phone">
@@ -99,7 +109,7 @@ export function CheckoutForm() {
             required
             value={phone}
             onChange={(event) => setPhone(event.target.value)}
-            className="mt-1 w-full rounded-card border border-gold/30 bg-cream px-3 py-3"
+            className="mt-1 min-h-11 w-full rounded-card border border-gold/30 bg-cream px-3 py-3"
           />
         </label>
         <label className="block text-sm" htmlFor="wilaya">
@@ -111,7 +121,7 @@ export function CheckoutForm() {
             onChange={(event) =>
               cart.setWilayaCode(event.target.value ? Number(event.target.value) : null)
             }
-            className="mt-1 w-full rounded-card border border-gold/30 bg-cream px-3 py-3"
+            className="mt-1 min-h-11 w-full rounded-card border border-gold/30 bg-cream px-3 py-3"
           >
             <option value="">{t("chooseWilaya")}</option>
             {cart.fees.map((fee) => (
@@ -131,7 +141,7 @@ export function CheckoutForm() {
             rows={3}
             value={address}
             onChange={(event) => setAddress(event.target.value)}
-            className="mt-1 w-full rounded-card border border-gold/30 bg-cream px-3 py-3"
+            className="mt-1 min-h-11 w-full rounded-card border border-gold/30 bg-cream px-3 py-3"
           />
         </label>
         <p className="rounded-card bg-cream px-3 py-3 text-sm">{t("payment")}</p>
@@ -139,7 +149,7 @@ export function CheckoutForm() {
         <button
           type="submit"
           disabled={pending}
-          className="w-full rounded-full bg-ink py-3 text-sm text-cream transition hover:bg-gold-dark disabled:opacity-60"
+          className="min-h-11 w-full rounded-full bg-ink py-3 text-sm text-cream transition hover:bg-gold-dark disabled:opacity-60"
         >
           {pending ? t("pending") : t("submit")}
         </button>

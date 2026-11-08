@@ -61,7 +61,7 @@ export function CartButton() {
                           type="button"
                           aria-label={t("decrease")}
                           onClick={() => cart.setQuantity(item.productId, item.quantity - 1)}
-                          className="h-10 w-10 rounded-full border border-gold/40"
+                              className="h-11 w-11 rounded-full border border-gold/40"
                         >
                           −
                         </button>
@@ -70,7 +70,7 @@ export function CartButton() {
                           type="button"
                           aria-label={t("increase")}
                           onClick={() => cart.setQuantity(item.productId, item.quantity + 1)}
-                          className="h-10 w-10 rounded-full border border-gold/40"
+                              className="h-11 w-11 rounded-full border border-gold/40"
                         >
                           +
                         </button>
@@ -138,13 +138,13 @@ export function CartButton() {
         type="button"
         onClick={() => cart.setOpen(true)}
         aria-label={t("title")}
-        className="relative rounded-full border border-gold/40 p-2 text-ink transition hover:border-gold hover:bg-ivory"
+        className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-gold/40 p-2 text-ink transition hover:border-gold hover:bg-ivory"
       >
         <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-none stroke-current">
           <path d="M6 7h12l-1 12H7L6 7z" strokeWidth="1.6" strokeLinejoin="round" />
           <path d="M9 7a3 3 0 0 1 6 0" strokeWidth="1.6" strokeLinecap="round" />
         </svg>
-        {count > 0 ? (
+        {cart.ready && count > 0 ? (
           <span className="absolute -top-1 -end-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 text-[11px] text-ink">
             {count}
           </span>

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function NotFound() {
   return (
     <html lang="fr">
@@ -15,7 +17,7 @@ export default function NotFound() {
         <div style={{ textAlign: "center" }}>
           <p style={{ fontSize: "3rem", margin: 0 }}>LOULA VIA</p>
           <p>Cette page est introuvable.</p>
-          <a href="/fr">Retour à l&apos;accueil</a>
+          <Link href="/fr">Retour à l&apos;accueil</Link>
         </div>
       </body>
     </html>

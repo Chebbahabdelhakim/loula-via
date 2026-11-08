@@ -26,7 +26,9 @@
   },
   "Product": {
     "back": "Retour à la collection",
-    "whatsapp": "Commander sur WhatsApp"
+    "buyNow": "Commander maintenant",
+    "payOnDelivery": "Paiement à la livraison",
+    "deliveryAlgeria": "Livraison dans toute l'Algérie"
   },
   "Footer": {
     "tagline": "Élégance & Style au quotidien",

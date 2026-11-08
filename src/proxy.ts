@@ -3,6 +3,7 @@ import createMiddleware from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 import { routing } from "./i18n/routing";
 import { createAdminClient } from "./lib/supabase/admin";
+import { getSupabasePublicEnv } from "./lib/supabase/env";
 
 const handleI18n = createMiddleware(routing);
 
@@ -14,8 +15,7 @@ function carryCookies(from: NextResponse, to: NextResponse) {
 }
 
 async function protectAdmin(request: NextRequest) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const { url, key } = getSupabasePublicEnv();
   let response = NextResponse.next({ request });
 
   if (!url || !key) {

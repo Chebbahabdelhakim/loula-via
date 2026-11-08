@@ -20,7 +20,7 @@ export async function ProductSection() {
   return (
     <ul className="mt-8 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
       {products.map((product, index) => (
-        <li key={product.id}>
+        <li key={product.id} className="h-full">
           <ProductCard product={product} locale={locale} priority={index < 2} />
         </li>
       ))}

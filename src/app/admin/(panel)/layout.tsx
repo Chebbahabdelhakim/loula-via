@@ -17,6 +17,14 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   } = await supabase.auth.getUser();
   if (!user) redirect("/admin/login");
 
+  const { data: adminAccess, error } = await supabase
+    .from("admins")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error || !adminAccess) redirect("/admin/login?erreur=acces");
+
   return (
     <div className="min-h-full">
       <header className="border-b border-gold/20 bg-ivory">

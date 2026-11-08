@@ -25,12 +25,12 @@ export async function Header() {
         <div className="flex items-center gap-2">
           <InstagramLink
             label={t("instagram")}
-            className="rounded-full border border-gold/40 p-2 text-ink transition hover:border-gold hover:bg-ivory"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-gold/40 p-2 text-ink transition hover:border-gold hover:bg-ivory"
           />
-          <Suspense fallback={<span className="h-9 w-16 rounded-full bg-gold/10" />}>
+          <Suspense fallback={<span className="h-11 w-16 rounded-full bg-gold/10" />}>
             <LocaleSwitcher />
           </Suspense>
-          <Suspense fallback={<span className="h-9 w-9 rounded-full bg-gold/10" />}>
+          <Suspense fallback={<span className="h-11 w-11 rounded-full bg-gold/10" />}>
             <CartButton />
           </Suspense>
         </div>

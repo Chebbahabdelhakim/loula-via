@@ -30,14 +30,30 @@ function errorCode(path: PropertyKey | undefined): OrderErrorCode {
 }
 
 export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
+  try {
+    return await placeOrderInner(input);
+  } catch {
+    return { ok: false, code: "save" };
+  }
+}
+
+async function placeOrderInner(input: unknown): Promise<PlaceOrderResult> {
   const parsed = checkoutSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, code: errorCode(parsed.error.issues[0]?.path[0]) };
   }
 
   const { customerName, phone, wilayaCode, address, locale, items } = parsed.data;
+  const merged = new Map<string, number>();
+  for (const item of items) {
+    merged.set(item.productId, Math.min(20, (merged.get(item.productId) ?? 0) + item.quantity));
+  }
+  const uniqueItems = [...merged.entries()].map(([productId, quantity]) => ({
+    productId,
+    quantity,
+  }));
   const admin = createAdminClient();
-  const ids = [...new Set(items.map((item) => item.productId))];
+  const ids = uniqueItems.map((item) => item.productId);
 
   const [{ data: products, error: productError }, { data: feeRow, error: feeError }, settingsResult] =
     await Promise.all([

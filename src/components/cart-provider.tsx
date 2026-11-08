@@ -3,9 +3,9 @@
 import {
   createContext,
   useContext,
-  useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
 } from "react";
 import type { DeliveryFee } from "@/lib/types";
 
@@ -25,7 +25,7 @@ type CartContextValue = {
   fees: DeliveryFee[];
   open: boolean;
   setOpen: (open: boolean) => void;
-  addItem: (item: Omit<CartLine, "quantity">) => void;
+  addItem: (item: Omit<CartLine, "quantity">, options?: { open?: boolean }) => void;
   setQuantity: (productId: string, quantity: number) => void;
   removeItem: (productId: string) => void;
   setWilayaCode: (code: number | null) => void;
@@ -38,6 +38,65 @@ type CartContextValue = {
 const CartContext = createContext<CartContextValue | null>(null);
 const CART_KEY = "loula-via-cart";
 const WILAYA_KEY = "loula-via-wilaya";
+const EMPTY_CART = "[]";
+const listeners = new Set<() => void>();
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+function notifyStorageChange() {
+  listeners.forEach((listener) => listener());
+}
+
+function getStoredCart() {
+  return window.localStorage.getItem(CART_KEY) ?? EMPTY_CART;
+}
+
+function getServerCart() {
+  return EMPTY_CART;
+}
+
+function getStoredWilaya() {
+  return window.localStorage.getItem(WILAYA_KEY);
+}
+
+function getServerWilaya() {
+  return null;
+}
+
+function parseCart(value: string): CartLine[] {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (item): item is CartLine =>
+        typeof item === "object" &&
+        item !== null &&
+        typeof item.productId === "string" &&
+        typeof item.nameFr === "string" &&
+        typeof item.nameAr === "string" &&
+        typeof item.price === "number" &&
+        (typeof item.imageUrl === "string" || item.imageUrl === null) &&
+        Number.isInteger(item.quantity) &&
+        item.quantity > 0,
+    );
+  } catch {
+    return [];
+  }
+}
+
+function storeCart(items: CartLine[]) {
+  window.localStorage.setItem(CART_KEY, JSON.stringify(items));
+  notifyStorageChange();
+}
+
+function storeWilaya(code: number | null) {
+  if (code) window.localStorage.setItem(WILAYA_KEY, String(code));
+  else window.localStorage.removeItem(WILAYA_KEY);
+  notifyStorageChange();
+}
 
 export function CartProvider({
   fees,
@@ -46,36 +105,11 @@ export function CartProvider({
   fees: DeliveryFee[];
   children: React.ReactNode;
 }) {
-  const [items, setItems] = useState<CartLine[]>([]);
-  const [wilayaCode, setWilayaCodeState] = useState<number | null>(null);
-  const [ready, setReady] = useState(false);
+  const cartValue = useSyncExternalStore(subscribe, getStoredCart, getServerCart);
+  const wilayaValue = useSyncExternalStore(subscribe, getStoredWilaya, getServerWilaya);
+  const items = useMemo(() => parseCart(cartValue), [cartValue]);
+  const wilayaCode = wilayaValue === null ? null : Number(wilayaValue);
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(CART_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored) as CartLine[];
-        if (Array.isArray(parsed)) setItems(parsed);
-      }
-      const storedWilaya = localStorage.getItem(WILAYA_KEY);
-      if (storedWilaya) setWilayaCodeState(Number(storedWilaya));
-    } catch {
-      setItems([]);
-    }
-    setReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!ready) return;
-    localStorage.setItem(CART_KEY, JSON.stringify(items));
-  }, [items, ready]);
-
-  useEffect(() => {
-    if (!ready) return;
-    if (wilayaCode) localStorage.setItem(WILAYA_KEY, String(wilayaCode));
-    else localStorage.removeItem(WILAYA_KEY);
-  }, [wilayaCode, ready]);
 
   const value = useMemo<CartContextValue>(() => {
     const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -83,44 +117,44 @@ export function CartProvider({
     const deliveryFee = feeRow ? feeRow.fee : null;
     return {
       items,
-      ready,
+      ready: true,
       wilayaCode,
       fees,
       open,
       setOpen,
-      addItem: (item) => {
-        setItems((current) => {
-          const existing = current.find((line) => line.productId === item.productId);
-          if (!existing) return [...current, { ...item, quantity: 1 }];
-          return current.map((line) =>
-            line.productId === item.productId
-              ? { ...line, quantity: Math.min(20, line.quantity + 1) }
-              : line,
-          );
-        });
-        setOpen(true);
-      },
-      setQuantity: (productId, quantity) => {
-        setItems((current) =>
-          current
-            .map((line) =>
-              line.productId === productId
-                ? { ...line, quantity: Math.min(20, Math.max(0, quantity)) }
+      addItem: (item, options) => {
+        const current = parseCart(getStoredCart());
+        const existing = current.find((line) => line.productId === item.productId);
+        const next = existing
+          ? current.map((line) =>
+              line.productId === item.productId
+                ? { ...line, quantity: Math.min(20, line.quantity + 1) }
                 : line,
             )
-            .filter((line) => line.quantity > 0),
-        );
+          : [...current, { ...item, quantity: 1 }];
+        storeCart(next);
+        if (options?.open !== false) setOpen(true);
+      },
+      setQuantity: (productId, quantity) => {
+        const next = parseCart(getStoredCart())
+          .map((line) =>
+            line.productId === productId
+              ? { ...line, quantity: Math.min(20, Math.max(0, quantity)) }
+              : line,
+          )
+          .filter((line) => line.quantity > 0);
+        storeCart(next);
       },
       removeItem: (productId) => {
-        setItems((current) => current.filter((line) => line.productId !== productId));
+        storeCart(parseCart(getStoredCart()).filter((line) => line.productId !== productId));
       },
-      setWilayaCode: setWilayaCodeState,
-      clear: () => setItems([]),
+      setWilayaCode: storeWilaya,
+      clear: () => storeCart([]),
       subtotal,
       deliveryFee,
       total: subtotal + (deliveryFee ?? 0),
     };
-  }, [fees, items, open, ready, wilayaCode]);
+  }, [fees, items, open, wilayaCode]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

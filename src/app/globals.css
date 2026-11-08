@@ -6,6 +6,7 @@
   --color-ink: #111111;
   --color-gold: #b8975a;
   --color-gold-dark: #8c7344;
+  --color-gold-ink: #5a431c;
   --color-ivory: #fbf7f2;
   --font-display: var(--font-playfair), Georgia, serif;
   --font-sans: var(--font-inter), system-ui, sans-serif;
@@ -22,6 +23,7 @@ body {
   background: var(--color-cream);
   color: var(--color-ink);
   font-family: var(--font-sans);
+  overflow-x: clip;
 }
 
 html[lang="ar"] body {

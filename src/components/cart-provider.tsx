@@ -7,8 +7,6 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import type { DeliveryFee } from "@/lib/types";
-
 export type CartLine = {
   productId: string;
   nameFr: string;
@@ -22,7 +20,6 @@ type CartContextValue = {
   items: CartLine[];
   ready: boolean;
   wilayaCode: number | null;
-  fees: DeliveryFee[];
   open: boolean;
   setOpen: (open: boolean) => void;
   addItem: (item: Omit<CartLine, "quantity">, options?: { open?: boolean }) => void;
@@ -31,7 +28,6 @@ type CartContextValue = {
   setWilayaCode: (code: number | null) => void;
   clear: () => void;
   subtotal: number;
-  deliveryFee: number | null;
   total: number;
 };
 
@@ -99,10 +95,8 @@ function storeWilaya(code: number | null) {
 }
 
 export function CartProvider({
-  fees,
   children,
 }: {
-  fees: DeliveryFee[];
   children: React.ReactNode;
 }) {
   const cartValue = useSyncExternalStore(subscribe, getStoredCart, getServerCart);
@@ -113,13 +107,10 @@ export function CartProvider({
 
   const value = useMemo<CartContextValue>(() => {
     const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const feeRow = fees.find((fee) => fee.code === wilayaCode);
-    const deliveryFee = feeRow ? feeRow.fee : null;
     return {
       items,
       ready: true,
       wilayaCode,
-      fees,
       open,
       setOpen,
       addItem: (item, options) => {
@@ -151,10 +142,9 @@ export function CartProvider({
       setWilayaCode: storeWilaya,
       clear: () => storeCart([]),
       subtotal,
-      deliveryFee,
-      total: subtotal + (deliveryFee ?? 0),
+      total: subtotal,
     };
-  }, [fees, items, open, wilayaCode]);
+  }, [items, open, wilayaCode]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

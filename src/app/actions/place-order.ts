@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { Product } from "@/lib/types";
 import { checkoutSchema } from "@/lib/validation";
 import { buildOrderMessage, whatsappLink } from "@/lib/whatsapp";
+import { getWilaya } from "@/lib/wilayas";
 
 export type OrderErrorCode =
   | "invalid"
@@ -55,24 +56,25 @@ async function placeOrderInner(input: unknown): Promise<PlaceOrderResult> {
   const admin = createAdminClient();
   const ids = uniqueItems.map((item) => item.productId);
 
-  const [{ data: products, error: productError }, { data: feeRow, error: feeError }, settingsResult] =
+  const [{ data: products, error: productError }, settingsResult] =
     await Promise.all([
       admin
         .from("products")
         .select("id, name_fr, name_ar, price, active")
         .in("id", ids),
-      admin.from("delivery_fees").select("code, name, fee").eq("code", wilayaCode).maybeSingle(),
       admin.from("site_settings").select("value").eq("key", "whatsapp_number").maybeSingle(),
     ]);
 
-  if (productError || feeError || !feeRow || !products) {
+  if (productError || !products) {
     return { ok: false, code: "save" };
   }
+  const selectedWilaya = getWilaya(wilayaCode);
+  if (!selectedWilaya) return { ok: false, code: "wilaya" };
 
   const byId = new Map((products as Pick<Product, "id" | "name_fr" | "name_ar" | "price" | "active">[]).map((product) => [product.id, product]));
   const lines = [];
 
-  for (const item of items) {
+  for (const item of uniqueItems) {
     const product = byId.get(item.productId);
     if (!product || !product.active) return { ok: false, code: "product" };
     const name = locale === "ar" ? product.name_ar || product.name_fr : product.name_fr;
@@ -85,9 +87,10 @@ async function placeOrderInner(input: unknown): Promise<PlaceOrderResult> {
     });
   }
 
-  const deliveryFee = feeRow.fee as number;
-  const total = lines.reduce((sum, line) => sum + line.lineTotal, 0) + deliveryFee;
-  const wilaya = `${feeRow.code} - ${feeRow.name}`;
+  const deliveryFee = 0;
+  const total = lines.reduce((sum, line) => sum + line.lineTotal, 0);
+  const wilaya = `${String(selectedWilaya.code).padStart(2, "0")} - ${selectedWilaya.nameFr}`;
+  const wilayaLabel = locale === "ar" ? selectedWilaya.nameAr : selectedWilaya.nameFr;
 
   const { data: order, error: orderError } = await admin
     .from("orders")
@@ -132,15 +135,15 @@ async function placeOrderInner(input: unknown): Promise<PlaceOrderResult> {
       orderNumber: order.order_number,
       customerName,
       phone,
-      wilaya,
+      wilaya: wilayaLabel,
       address,
       lines: lines.map((line) => ({
         name: line.name,
         quantity: line.quantity,
         lineTotal: line.lineTotal,
       })),
-      deliveryFee,
       total,
+      locale,
     }),
   );
 

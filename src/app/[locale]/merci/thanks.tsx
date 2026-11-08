@@ -27,6 +27,7 @@ export function Thanks({ orderNumber }: { orderNumber: string }) {
         {t("number")} <span className="font-medium">#{orderNumber}</span>
       </p>
       <p className="mt-3 text-ink/70">{t("body")}</p>
+      <p className="mt-3 text-sm text-ink/70">{t("deliveryFeeConfirmed")}</p>
       {whatsappUrl ? (
         <a
           href={whatsappUrl}

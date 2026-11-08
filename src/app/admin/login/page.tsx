@@ -14,7 +14,9 @@ export default async function LoginPage({
       <div className="mt-8 rounded-card bg-ivory p-6">
         <LoginForm
           notice={
-            erreur === "cle"
+            erreur === "config"
+              ? "Configuration Supabase incomplète. Ajoutez NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY (ou NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) dans .env.local, puis redémarrez le serveur."
+              : erreur === "cle"
               ? "La clé secrète Supabase est absente ou incorrecte. Remplacez SUPABASE_SERVICE_ROLE_KEY dans .env.local par la clé sb_secret_."
               : erreur === "acces"
                 ? "Ce compte n'est pas administrateur. Ajoutez-le dans la table admins."

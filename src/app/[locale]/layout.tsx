@@ -5,7 +5,6 @@ import { getTranslations } from "next-intl/server";
 import { CartProvider } from "@/components/cart-provider";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { getDeliveryFees } from "@/lib/catalog";
 import { routing } from "@/i18n/routing";
 import { cairo, inter, playfair } from "@/lib/fonts";
 import "../globals.css";
@@ -56,8 +55,6 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  const fees = await getDeliveryFees();
-
   return (
     <html
       lang={locale}
@@ -66,7 +63,7 @@ export default async function LocaleLayout({
     >
       <body className="flex min-h-full flex-col bg-cream text-ink">
         <NextIntlClientProvider>
-          <CartProvider fees={fees}>
+          <CartProvider>
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />

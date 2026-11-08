@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatDa } from "@/lib/money";
 import { useCart } from "@/components/cart-provider";
+import { getWilayaName, WILAYAS } from "@/lib/wilayas";
 
 export function CartButton() {
   const t = useTranslations("Cart");
@@ -38,7 +39,7 @@ export function CartButton() {
           <button
             type="button"
             onClick={() => cart.setOpen(false)}
-            className="rounded-full px-3 py-2 text-sm text-ink/70 transition hover:bg-cream"
+            className="min-h-11 min-w-11 rounded-full px-3 py-2 text-sm text-ink/70 transition hover:bg-cream"
           >
             {t("close")}
           </button>
@@ -93,31 +94,26 @@ export function CartButton() {
               </label>
               <select
                 id="cart-wilaya"
+                dir={locale === "ar" ? "rtl" : "ltr"}
+                required
                 value={cart.wilayaCode ?? ""}
                 onChange={(event) =>
                   cart.setWilayaCode(event.target.value ? Number(event.target.value) : null)
                 }
-                className="w-full max-w-full rounded-card border border-gold/30 bg-cream px-3 py-3"
+                className="min-h-11 w-full max-w-full rounded-card border border-gold/30 bg-cream px-3 py-3"
               >
-                <option value="">{t("chooseWilaya")}</option>
-                {cart.fees.map((fee) => (
-                  <option key={fee.code} value={fee.code}>
-                    {fee.code.toString().padStart(2, "0")} — {fee.name}
+                <option value="" disabled>{t("chooseWilaya")}</option>
+                {WILAYAS.map((wilaya) => (
+                  <option key={wilaya.code} value={wilaya.code}>
+                    {getWilayaName(wilaya, locale)}
                   </option>
                 ))}
               </select>
-              <div className="flex justify-between text-sm">
-                <span>{t("subtotal")}</span>
-                <span>{formatDa(cart.subtotal)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>{t("delivery")}</span>
-                <span>{cart.deliveryFee === null ? "—" : formatDa(cart.deliveryFee)}</span>
-              </div>
               <div className="flex justify-between text-base font-medium">
                 <span>{t("total")}</span>
                 <span>{formatDa(cart.total)}</span>
               </div>
+              <p className="text-sm text-ink/70">{t("deliveryFeeConfirmed")}</p>
               <Link
                 href="/commande"
                 onClick={() => cart.setOpen(false)}

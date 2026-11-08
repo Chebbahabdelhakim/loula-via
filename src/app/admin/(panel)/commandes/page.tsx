@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { updateOrderStatus } from "@/app/admin/actions";
 import { formatDa } from "@/lib/money";
 import { toInternationalDz } from "@/lib/phone";
 import { createSupabaseServer } from "@/lib/supabase/server";
+import { getSupabasePublicEnv } from "@/lib/supabase/env";
 import { ORDER_STATUSES, type Order, type OrderStatus } from "@/lib/types";
 
 function formatWhen(value: string) {
@@ -19,6 +21,9 @@ export default async function OrdersPage({
 }: {
   searchParams: Promise<{ statut?: string }>;
 }) {
+  const { url, key } = getSupabasePublicEnv();
+  if (!url || !key) redirect("/admin/login?erreur=config");
+
   const { statut } = await searchParams;
   const status = ORDER_STATUSES.includes(statut as OrderStatus) ? (statut as OrderStatus) : "";
   const supabase = await createSupabaseServer();

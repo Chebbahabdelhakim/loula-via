@@ -7,6 +7,7 @@ import { placeOrder, type OrderErrorCode } from "@/app/actions/place-order";
 import { useCart } from "@/components/cart-provider";
 import { formatDa } from "@/lib/money";
 import { checkoutSchema } from "@/lib/validation";
+import { getWilayaName, WILAYAS } from "@/lib/wilayas";
 
 export function CheckoutForm() {
   const t = useTranslations("Checkout");
@@ -116,6 +117,7 @@ export function CheckoutForm() {
           {t("wilaya")}
           <select
             id="wilaya"
+            dir={locale === "ar" ? "rtl" : "ltr"}
             required
             value={cart.wilayaCode ?? ""}
             onChange={(event) =>
@@ -123,10 +125,10 @@ export function CheckoutForm() {
             }
             className="mt-1 min-h-11 w-full rounded-card border border-gold/30 bg-cream px-3 py-3"
           >
-            <option value="">{t("chooseWilaya")}</option>
-            {cart.fees.map((fee) => (
-              <option key={fee.code} value={fee.code}>
-                {fee.code.toString().padStart(2, "0")} — {fee.name}
+            <option value="" disabled>{t("chooseWilaya")}</option>
+            {WILAYAS.map((wilaya) => (
+              <option key={wilaya.code} value={wilaya.code}>
+                {getWilayaName(wilaya, locale)}
               </option>
             ))}
           </select>
@@ -144,7 +146,9 @@ export function CheckoutForm() {
             className="mt-1 min-h-11 w-full rounded-card border border-gold/30 bg-cream px-3 py-3"
           />
         </label>
-        <p className="rounded-card bg-cream px-3 py-3 text-sm">{t("payment")}</p>
+        <div className="space-y-2 rounded-card bg-cream px-3 py-3 text-sm">
+          <p>{t("payment")}</p>
+        </div>
         {message ? <p className="text-sm text-red-800">{message}</p> : null}
         <button
           type="submit"
@@ -167,14 +171,11 @@ export function CheckoutForm() {
           ))}
         </ul>
         <div className="mt-4 space-y-1 border-t border-gold/20 pt-3 text-sm">
-          <p className="flex justify-between">
-            <span>{t("delivery")}</span>
-            <span>{cart.deliveryFee === null ? "—" : formatDa(cart.deliveryFee)}</span>
-          </p>
           <p className="flex justify-between text-base font-medium">
             <span>{t("total")}</span>
             <span>{formatDa(cart.total)}</span>
           </p>
+          <p className="pt-1 text-ink/70">{t("deliveryFeeConfirmed")}</p>
         </div>
       </aside>
     </form>

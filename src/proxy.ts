@@ -19,7 +19,17 @@ async function protectAdmin(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   if (!url || !key) {
-    return response;
+    const path = request.nextUrl.pathname.replace(/\/$/, "") || "/";
+    if (path === "/admin/login") {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.search = "erreur=config";
+      return NextResponse.rewrite(loginUrl);
+    }
+
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = "/admin/login";
+    loginUrl.search = "erreur=config";
+    return NextResponse.redirect(loginUrl);
   }
 
   const supabase = createServerClient(url, key, {

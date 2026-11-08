@@ -1,7 +1,10 @@
+import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getSupabasePublicEnv } from "@/lib/supabase/env";
 import { formatDa } from "@/lib/money";
+
+export const instant = false;
 
 function algiersStamp(date: Date, monthOnly = false) {
   const day = new Intl.DateTimeFormat("en-CA", {
@@ -14,6 +17,8 @@ function algiersStamp(date: Date, monthOnly = false) {
 }
 
 export default async function DashboardPage() {
+  await connection();
+
   const { url, key } = getSupabasePublicEnv();
   if (!url || !key) redirect("/admin/login?erreur=config");
 

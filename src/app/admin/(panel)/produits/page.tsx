@@ -1,10 +1,15 @@
+import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { ProductManager } from "./product-manager";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { getSupabasePublicEnv } from "@/lib/supabase/env";
 import type { Product } from "@/lib/types";
 
+export const instant = false;
+
 export default async function ProductsPage() {
+  await connection();
+
   const { url, key } = getSupabasePublicEnv();
   if (!url || !key) redirect("/admin/login?erreur=config");
 

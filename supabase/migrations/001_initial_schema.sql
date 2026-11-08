@@ -282,3 +282,43 @@ on conflict (code) do update set
   name = excluded.name,
   fee = excluded.fee,
   updated_at = now();
+
+insert into storage.buckets (id, name, public)
+values ('products', 'products', true)
+on conflict (id) do update set public = excluded.public;
+
+drop policy if exists "Public can read product photos" on storage.objects;
+create policy "Public can read product photos" on storage.objects
+for select using (bucket_id = 'products');
+
+drop policy if exists "Admins can upload product photos" on storage.objects;
+create policy "Admins can upload product photos" on storage.objects
+for insert to authenticated with check (
+  bucket_id = 'products'
+  and exists (
+    select 1 from public.admins where public.admins.user_id = auth.uid()
+  )
+);
+
+drop policy if exists "Admins can update product photos" on storage.objects;
+create policy "Admins can update product photos" on storage.objects
+for update to authenticated using (
+  bucket_id = 'products'
+  and exists (
+    select 1 from public.admins where public.admins.user_id = auth.uid()
+  )
+) with check (
+  bucket_id = 'products'
+  and exists (
+    select 1 from public.admins where public.admins.user_id = auth.uid()
+  )
+);
+
+drop policy if exists "Admins can delete product photos" on storage.objects;
+create policy "Admins can delete product photos" on storage.objects
+for delete to authenticated using (
+  bucket_id = 'products'
+  and exists (
+    select 1 from public.admins where public.admins.user_id = auth.uid()
+  )
+);
